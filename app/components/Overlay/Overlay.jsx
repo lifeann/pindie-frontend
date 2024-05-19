@@ -1,4 +1,3 @@
-'use client';
 import Styles from "./Overlay.module.css";
 
 export const Overlay = (props) => {

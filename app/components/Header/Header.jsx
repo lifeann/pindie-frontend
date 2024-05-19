@@ -1,34 +1,20 @@
 "use client";
-
-import { useState } from "react";
-
 import Styles from "./Header.module.css";
 import { Overlay } from "../Overlay/Overlay";
 import { Popup } from "../Popup/Popup";
 import { AuthForm } from "../AuthForm/AuthForm";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { useStore } from "@/app/store/app-store";
 
 export const Header = () => {
-  const [popupIsOpened, setPopupIsOpened] = useState(false);
-
-  const authContext = useStore();
-
-  const openPopup = () => {
-    setPopupIsOpened(true);
-  };
-  const closePopup = () => {
-    setPopupIsOpened(false);
-  };
-
   const pathname = usePathname();
+  const store = useStore();
 
   const handleLogout = () => {
-    authContext.logout();
+    store.logout();
   };
+
   return (
     <header className={Styles["header"]}>
       {pathname === "/" ? (
@@ -112,20 +98,23 @@ export const Header = () => {
           </li>
         </ul>
         <div className={Styles["auth"]}>
-          {authContext.isAuth ? (
+          {store.isAuth ? (
             <button className={Styles["auth__button"]} onClick={handleLogout}>
               Выйти
             </button>
           ) : (
-            <button className={Styles["auth__button"]} onClick={openPopup}>
+            <button
+              className={Styles["auth__button"]}
+              onClick={store.openPopup}
+            >
               Войти
             </button>
           )}
         </div>
       </nav>
-      <Overlay isOpened={popupIsOpened} close={closePopup} />
-      <Popup isOpened={popupIsOpened} close={closePopup}>
-        <AuthForm close={closePopup} />
+      <Overlay isOpened={store.popupIsOpened} close={store.closePopup} />
+      <Popup isOpened={store.popupIsOpened} close={store.closePopup}>
+        <AuthForm close={store.closePopup} />
       </Popup>
     </header>
   );

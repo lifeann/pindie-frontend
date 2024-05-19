@@ -7,17 +7,18 @@ import { isResponseOk } from "@/app/api/api-utils";
 import { useStore } from "@/app/store/app-store";
 
 export const AuthForm = (props) => {
-  const authContext = useStore();
-  const [authData, setAuthData] = useState({ email: "", password: "" });
+  const store = useStore();
+  const [authData, setAuthData] = useState({ email: "", password: "" }); 
   const [message, setMessage] = useState({ status: null, text: null });
   const handleInput = (e) => {
     setAuthData({ ...authData, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = await authorize(endpoints.auth, authData);
     if (isResponseOk(userData)) {
-      authContext.login({...userData, id: userData._id}, userData.jwt);
+      store.login({...userData, id: userData._id}, userData.jwt);
       setMessage({ status: "success", text: "Вы авторизовались!" });
     } else {
       setMessage({ status: "error", text: "Неверные почта или пароль" });
@@ -25,14 +26,15 @@ export const AuthForm = (props) => {
   };
   useEffect(() => {
     let timer;
-    if (authContext.user) {
+    if (store.user) {
       timer = setTimeout(() => {
         setMessage({ status: null, text: null });
         props.close();
       }, 1000);
     }
     return () => clearTimeout(timer);
-  }, [authContext.user]);
+  }, [store.user]);
+
   return (
     <form onSubmit={handleSubmit} className={Styles["form"]}>
       <h2 className={Styles["form__title"]}>Авторизация</h2>

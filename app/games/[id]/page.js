@@ -10,14 +10,13 @@ import { GameNotFound } from "@/app/components/GameNotFound/GameNotFound";
 import { Preloader } from "@/app/components/Preloader/Preloader";
 import { useState, useEffect } from "react";
 import { useStore } from "@/app/store/app-store";
-
 import Styles from "./Game.module.css";
 
 export default function GamePage(props) {
+  const store = useStore();
   const [game, setGame] = useState(null);
   const [preloaderVisible, setPreloaderVisible] = useState(true);
   const [isVoted, setIsVoted] = useState(false);
-  const authContext = useStore();
 
   useEffect(() => {
     async function fetchData() {
@@ -30,30 +29,40 @@ export default function GamePage(props) {
     }
     fetchData();
   }, []);
-  
+
   useEffect(() => {
-    authContext.user && game ? setIsVoted(checkIfUserVoted(game, authContext.user.id)) : setIsVoted(false);
-  }, [authContext.user, game]);
+    if (store.user && game) {
+      setIsVoted(checkIfUserVoted(game, store.user.id));
+    } else {
+      setIsVoted(false);
+    }
+  }, [store.user, game]);
 
   const handleVote = async () => {
-    const jwt = authContext.token
+    const jwt = store.token;
+
+    if (!jwt) {
+      store.openPopup();
+      return;
+    }
+
     let usersIdArray = game.users.length
       ? game.users.map((user) => user.id)
       : [];
-    usersIdArray.push(authContext.user.id);
+    usersIdArray.push(store.user.id);
     const response = await vote(
       `${endpoints.games}/${game.id}`,
       jwt,
       usersIdArray
     );
     if (isResponseOk(response)) {
+      setIsVoted(true);
       setGame(() => {
         return {
           ...game,
-          users: [...game.users, authContext.user],
+          users: [...game.users, store.user],
         };
       });
-      setIsVoted(true);
     }
   };
 
@@ -85,7 +94,7 @@ export default function GamePage(props) {
                 </span>
               </p>
               <button
-                disabled={!authContext.isAuth || isVoted}
+                disabled={isVoted}
                 className={`button ${Styles["about__vote-button"]}`}
                 onClick={handleVote}
               >
