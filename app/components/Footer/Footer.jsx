@@ -36,7 +36,7 @@ export const Footer = () => {
           </a>
         </li>
         <li className={Styles["social-list__item"]}>
-          <a href="https://pindie-lifeann.nomoredomainswork.ru/" className={`button ${Styles["social-list__link"]}`}>
+          <a href="https://pindie-lifeann.nomoredomainswork.ru/" target="_blank" className={`button ${Styles["social-list__link"]}`}>
             ADM
           </a>
         </li>
