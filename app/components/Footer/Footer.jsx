@@ -35,6 +35,11 @@ export const Footer = () => {
             TG
           </a>
         </li>
+        <li className={Styles["social-list__item"]}>
+          <a href="https://pindie-lifeann.nomoredomainswork.ru/" className={`button ${Styles["social-list__link"]}`}>
+            ADM
+          </a>
+        </li>
       </ul>
     </footer>
   );
